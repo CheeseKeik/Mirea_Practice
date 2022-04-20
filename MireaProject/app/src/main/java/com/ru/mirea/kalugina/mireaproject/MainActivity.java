@@ -1,5 +1,6 @@
 package com.ru.mirea.kalugina.mireaproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ru.mirea.kalugina.mireaproject.databinding.ActivityMainBinding;
+import com.ru.mirea.kalugina.mireaproject.ui.audioPlayer.PlayerService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,8 +65,12 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-//    public void onClickOpenBrowser(View view) {
-//        binding.navView.getMenu().findItem(R.id.nav_browser).setChecked(true);
-//        binding.drawerLayout.closeDrawers();
-//    }
+    public void onClickPlayMusic(View view) {
+        startService(
+                new Intent(MainActivity.this, PlayerService.class));
+    }
+    public void onClickStopMusic(View view) {
+        stopService(
+                new Intent(MainActivity.this, PlayerService.class));
+    }
 }

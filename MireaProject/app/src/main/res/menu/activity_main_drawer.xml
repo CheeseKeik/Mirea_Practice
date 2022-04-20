@@ -24,5 +24,9 @@
             android:id="@+id/nav_calculator"
             android:icon="@drawable/ic_menu_calculator"
             android:title="@string/menu_calculator" />
+        <item
+            android:id="@+id/nav_audioPlayer"
+            android:icon="@android:drawable/ic_media_play"
+            android:title="@string/menu_audioPlayer" />
     </group>
 </menu>

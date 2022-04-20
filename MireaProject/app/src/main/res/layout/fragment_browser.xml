@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.browser.BrowserFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/textBrowser"
         android:layout_width="match_parent"

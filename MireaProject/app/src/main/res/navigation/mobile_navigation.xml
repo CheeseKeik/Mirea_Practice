@@ -32,4 +32,9 @@
         android:name="com.ru.mirea.kalugina.mireaproject.ui.calculator.CalculatorFragment"
         android:label="@string/menu_calculator"
         tools:layout="@layout/fragment_calculator" />
+    <fragment
+        android:id="@+id/nav_audioPlayer"
+        android:name="com.ru.mirea.kalugina.mireaproject.ui.audioPlayer.AudioPlayerFragment"
+        android:label="@string/menu_audioPlayer"
+        tools:layout="@layout/fragment_audio_player" />
 </navigation>

@@ -7,13 +7,17 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ru.mirea.kalugina.mireaproject.MainActivity;
+import com.ru.mirea.kalugina.mireaproject.R;
 import com.ru.mirea.kalugina.mireaproject.databinding.FragmentAudioPlayerBinding;
+
+import java.io.File;
 
 public class AudioPlayerFragment extends Fragment {
 
@@ -23,8 +27,6 @@ public class AudioPlayerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        AudioPlayerViewModel audioPlayerViewModel =
-                new ViewModelProvider(this).get(AudioPlayerViewModel.class);
 
         binding = FragmentAudioPlayerBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -32,18 +34,20 @@ public class AudioPlayerFragment extends Fragment {
         binding.buttonPlay.setOnClickListener(this::onClickPlayMusic);
         binding.buttonStop.setOnClickListener(this::onClickStopMusic);
 
-        final TextView textView = binding.textPlayingNow;
-        audioPlayerViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
     public void onClickPlayMusic(View view) {
         MainActivity activity = (MainActivity) getActivity();
+        assert activity != null;
         activity.startService(
                 new Intent(activity, PlayerService.class));
+        binding.textPlayingNow.setText(activity.getFileName(R.raw.cuddlefish));
     }
+
     public void onClickStopMusic(View view) {
         MainActivity activity = (MainActivity) getActivity();
+        assert activity != null;
         activity.stopService(
                 new Intent(activity, PlayerService.class));
     }

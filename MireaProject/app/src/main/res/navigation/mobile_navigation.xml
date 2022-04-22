@@ -10,13 +10,11 @@
         android:name="com.ru.mirea.kalugina.mireaproject.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
-
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.ru.mirea.kalugina.mireaproject.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
-
+        android:id="@+id/nav_camera"
+        android:name="com.ru.mirea.kalugina.mireaproject.ui.camera.CameraFragment"
+        android:label="@string/menu_camera"
+        tools:layout="@layout/fragment_camera" />
     <fragment
         android:id="@+id/nav_slideshow"
         android:name="com.ru.mirea.kalugina.mireaproject.ui.slideshow.SlideshowFragment"
@@ -37,4 +35,9 @@
         android:name="com.ru.mirea.kalugina.mireaproject.ui.audioPlayer.AudioPlayerFragment"
         android:label="@string/menu_audioPlayer"
         tools:layout="@layout/fragment_audio_player" />
+    <fragment
+        android:id="@+id/nav_audioRecorder"
+        android:name="com.ru.mirea.kalugina.mireaproject.ui.audioRecorder.AudioRecorderFragment"
+        android:label="@string/menu_audioRecorder"
+        tools:layout="@layout/fragment_audio_recorder" />
 </navigation>

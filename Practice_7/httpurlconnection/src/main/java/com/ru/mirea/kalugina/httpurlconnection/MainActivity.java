@@ -21,20 +21,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView resultTextView;
-    private TextView cityTextView;
-    private TextView countryTextView;
-    private String url = "http://whatismyip.akamai.com";
+    private TextView resultIP;
+    private TextView resultCountry;
+    private TextView resultCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        resultTextView = findViewById(R.id.myIp);
-        cityTextView = findViewById(R.id.cityTextView);
-        countryTextView = findViewById(R.id.regionTextView);
+        resultIP = findViewById(R.id.myIp);
+        resultCountry = findViewById(R.id.regionTextView);
+        resultCity = findViewById(R.id.cityTextView);
     }
 
     public void onClick(View view) {
@@ -45,97 +45,89 @@ public class MainActivity extends AppCompatActivity {
             networkinfo = connectivityManager.getActiveNetworkInfo();
         }
         if (networkinfo != null && networkinfo.isConnected()) {
-            new DownloadPageTask().execute(url); // запускаем в новом потоке
+            AsyncTask<String, Void, String> getIpTask = new DownloadPageTask().execute("http://ip-api.com/json/");
+            try {
+                getIpTask.get();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
         } else {
             Toast.makeText(this, "Нет интернета", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private class DownloadPageTask extends AsyncTask<String, Void, Info> {
+    private class DownloadPageTask extends AsyncTask<String, Void, String> {
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            resultTextView.setText("Загружаем...");
-            cityTextView.setText("Загружаем...");
-            countryTextView.setText("Загружаем...");
+            resultIP.setText("Загружаем...");
+            resultCountry.setText("Загружаем...");
+            resultCity.setText("Загружаем...");
         }
         @Override
-        protected Info doInBackground(String... strings) {
+        protected String doInBackground(String... urls) {
             try {
-                String ip = downloadIpInfo(strings[0]);
-                return getInformationByIp(ip);
-
+                return getDataFromAPI(urls[0]);
             } catch (IOException e) {
                 e.printStackTrace();
-                return null;
+                return "error";
             }
         }
-
         @Override
-        protected void onPostExecute(Info info) {
-            resultTextView.setText(info.getIp());
-            cityTextView.setText(info.getCity());
-            countryTextView.setText(info.getCountry());
-            super.onPostExecute(info);
-        }
-
-        private Info getInformationByIp(String ip){
+        protected void onPostExecute(String result) {
             try {
-                String content = getContentFromApi("http://ip-api.com/json/" + ip,
-                        "GET");
-                JSONObject responseJson = new JSONObject(content);
-                String country = valueOf(responseJson.get("country"));
-                String city = valueOf(responseJson.get("city"));
+                JSONObject responseJson = new JSONObject(result);
+                String ip = responseJson.getString("query");
+                String country = responseJson.getString("country");
+                String city = responseJson.getString("city");
+                resultIP.setText("My IP: " + ip);
+                resultCountry.setText("My country: " + country);
+                resultCity.setText("My city: " + city);
 
-                return new Info(ip, city, country);
-
-            } catch (IOException | JSONException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return null;
+            super.onPostExecute(result);
         }
+    }
 
-
-        private String getContentFromApi(String address, String method) throws IOException {
-            InputStream inputStream = null;
-            String data = "";
-            try {
-                URL url = new URL(address);
-                HttpURLConnection connection = (HttpURLConnection) url
-                        .openConnection();
-                connection.setReadTimeout(100000);
-                connection.setConnectTimeout(100000);
-                connection.setRequestMethod(method);
-                connection.setInstanceFollowRedirects(true);
-                connection.setUseCaches(false);
-                connection.setDoInput(true);
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    inputStream = connection.getInputStream();
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    int read;
-                    while ((read = inputStream.read()) != -1) {
-                        bos.write(read);
-                    }
-                    bos.close();
-                    data = bos.toString();
-                } else {
-                    data = connection.getResponseMessage() + " . Error Code : " + responseCode;
+    private String getDataFromAPI(String address) throws IOException {
+        InputStream inputStream = null;
+        String data = "";
+        try {
+            URL url = new URL(address);
+            HttpURLConnection connection = (HttpURLConnection) url
+                    .openConnection();
+            connection.setReadTimeout(100000);
+            connection.setConnectTimeout(100000);
+            connection.setRequestMethod("GET");
+            connection.setInstanceFollowRedirects(true);
+            connection.setUseCaches(false);
+            connection.setDoInput(true);
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) { // 200 OK
+                inputStream = connection.getInputStream();
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                int read = 0;
+                while ((read = inputStream.read()) != -1) {
+                    bos.write(read);
                 }
-                connection.disconnect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
+                bos.close();
+                data = bos.toString();
+            } else {
+                data = connection.getResponseMessage() + " . Error Code : " + responseCode;
             }
-            return data;
+            connection.disconnect();
+            //return data;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
         }
-
-        private String downloadIpInfo(String address) throws IOException {
-            return getContentFromApi(address, "GET");
-        }
+        return data;
     }
 }
 

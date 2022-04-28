@@ -13,6 +13,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MireaProject" >
+        <activity
+            android:name=".ui.authentication.Login"
+            android:exported="true"
+            android:theme="@style/Theme.MireaProject.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".ui.audioRecorder.RecorderService"
             android:enabled="true"
@@ -31,7 +42,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 

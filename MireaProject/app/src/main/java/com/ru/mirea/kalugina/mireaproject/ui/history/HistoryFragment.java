@@ -14,11 +14,17 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.ru.mirea.kalugina.mireaproject.databinding.FragmentHistoryBinding;
+import com.ru.mirea.kalugina.mireaproject.ui.history.db.App;
+import com.ru.mirea.kalugina.mireaproject.ui.history.db.History;
+import com.ru.mirea.kalugina.mireaproject.ui.history.db.HistoryDao;
+import com.ru.mirea.kalugina.mireaproject.ui.history.db.HistoryDatabase;
 
 import java.util.ArrayList;
 
 public class HistoryFragment extends Fragment {
-    ArrayList<History> histories = new ArrayList<>();
+    HistoryDatabase db;
+    HistoryDao historyDao;
+    History history;
     private FragmentHistoryBinding binding;
 
     @Override
@@ -27,24 +33,16 @@ public class HistoryFragment extends Fragment {
 
         binding = FragmentHistoryBinding.inflate(inflater, container, false);
 
-        setInitialStories();
-        HistoryAdapter adapter = new HistoryAdapter(getActivity(), histories);
+        db = App.getInstance().getDatabase();
+        historyDao = db.historyDao();
+
+        HistoryAdapter adapter = new HistoryAdapter(getActivity(), db);
         binding.recycler.setAdapter(adapter);
 
         binding.addHistoryButton.setOnClickListener(this::onClickAddHistory);
 
 
         return binding.getRoot();
-    }
-
-    private void setInitialStories(){
-        histories.add(new History("Skyrim", "You were trying to cross the border, right? " +
-                                                        "\nWalked right into that Imperial ambush, same as us, and that thief over there. " +
-                                                        "\nDamn you Stormcloaks. Skyrim was fine until you came along."));
-        histories.add(new History("Skyrim IV", "I was born 87 years ago. For 65 years I've ruled as Tamriel's Emperor. " +
-                                                                "\nBut for all these years I have never been the ruler of my own dreams. I have seen the Gates of Oblivion, beyond which no waking eye may see. " +
-                                                                "\nBehold, in Darkness a Doom sweeps the land. This is the 27th of Last Seed; the Year of Akatosh 433. " +
-                                                                "\nThese are the closing days of the 3rd Era, and the final hours of my life."));
     }
 
     private void onClickAddHistory(View view){
@@ -75,10 +73,15 @@ public class HistoryFragment extends Fragment {
 
         alert.setPositiveButton("Создать", (dialogInterface, i) -> {
             String historyValue = historyContent.getText().toString();
-            histories.add(new History(historyTitle, historyValue));
+            createHistory(historyTitle, historyValue);
         });
 
         alert.setNegativeButton("Отмена", (dialogInterface, i) -> {});
         alert.show();
+    }
+
+    private void createHistory(String title, String content){
+        history = new History(title, content);
+        historyDao.insert(history);
     }
 }

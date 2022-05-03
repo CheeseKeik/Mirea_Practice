@@ -10,15 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ru.mirea.kalugina.mireaproject.R;
-
-import java.util.List;
+import com.ru.mirea.kalugina.mireaproject.ui.history.db.History;
+import com.ru.mirea.kalugina.mireaproject.ui.history.db.HistoryDao;
+import com.ru.mirea.kalugina.mireaproject.ui.history.db.HistoryDatabase;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
     private final LayoutInflater inflater;
-    private final List<History> histories;
+    HistoryDatabase db;
+    HistoryDao historyDao;
+    History history;
 
-    HistoryAdapter(Context context, List<History> histories) {
-        this.histories = histories;
+    HistoryAdapter(Context context, HistoryDatabase db) {
+        this.db = db;
+        historyDao = db.historyDao();
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -31,14 +35,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        History history = histories.get(position);
-        holder.storyTitle.setText(history.getTitle());
-        holder.storyContent.setText(history.getContent());
+        history = historyDao.getById(position + 1);
+        holder.storyTitle.setText(history.title);
+        holder.storyContent.setText(history.content);
     }
 
     @Override
     public int getItemCount() {
-        return histories.size();
+        return db.historyDao().getCount();
     }
 
 
